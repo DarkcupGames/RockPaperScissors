@@ -16,8 +16,7 @@ public class Hand : MonoBehaviour
     [SerializeField] private Transform playerHand;
     [SerializeField] private Transform enemyHand;
     [SerializeField] private GameObject groupButton;
-    [SerializeField] private GameObject resultPopup;
-    [SerializeField] private TextMeshProUGUI resultTxt;
+    [SerializeField] private ResultPopup resultPopup;
     [SerializeField] private TextMeshProUGUI playerScoreTxt;
     [SerializeField] private TextMeshProUGUI enemyScoreTxt;
 
@@ -43,7 +42,7 @@ public class Hand : MonoBehaviour
 
         HandAnimation(index);
         HideOrShowButton();
-        ShowOrHideResultPopup();
+        resultPopup.Hide();
     }
 
     private void HandAnimation(int index)
@@ -71,27 +70,6 @@ public class Hand : MonoBehaviour
               enemyHand.transform.DORotate(Vector3.zero, ROTATION_DURATION / 2f);
           });
     }
-    private void ShowOrHideResultPopup()
-    {
-        var resultPopupRect = resultPopup.GetComponent<RectTransform>();
-        if (resultPopupRect.sizeDelta.y == 0)
-        {
-            resultPopupRect.DOSizeDelta(new Vector2(resultPopupRect.sizeDelta.x, 200), 1f).
-                OnComplete(() =>
-                {
-                    resultTxt.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
-                });
-        }
-        else
-        {
-            resultPopupRect.DOSizeDelta(new Vector2(resultPopupRect.sizeDelta.x, 0), 1f).
-                OnComplete(() =>
-                {
-                    resultTxt.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack);
-
-                }); 
-        }
-    }
     private void HideOrShowButton()
     {
         state = State.Playing;
@@ -109,41 +87,41 @@ public class Hand : MonoBehaviour
         string paperWin = "PAPER\nWRAPS\nROCK";
         string scissorsWin = "SCISSORS\nCUT PAPER";
         string draw = $"DRAW\n{playerChoice} VS {computerChoice}";
-
+        string result = "";
         switch (playerChoice)
         {
             case "ROCK" when computerChoice == "SCISSORS":
-                resultTxt.text = rockWin;
+                result = rockWin;
                 --enemyScore;
                 enemyScoreTxt.text = $"Enemy score: {enemyScore}";
                 break;
             case "PAPER" when computerChoice == "ROCK":
-                resultTxt.text = paperWin;
+                result = paperWin;
                 --enemyScore;
                 enemyScoreTxt.text = $"Enemy score: {enemyScore}";
                 break;
             case "SCISSORS" when computerChoice == "PAPER":
-                resultTxt.text = scissorsWin;
+                result = scissorsWin;
                 --enemyScore;
                 enemyScoreTxt.text = $"Enemy score: {enemyScore}";
                 break;
             case var _ when playerChoice == computerChoice:
-                resultTxt.text = draw;
+                result = draw;
                 break;
             default:
                 switch (computerChoice)
                 {
-                    case "ROCK": resultTxt.text = rockWin; break;
+                    case "ROCK": result = rockWin; break;
 
-                    case "PAPER": resultTxt.text = paperWin; break;
+                    case "PAPER": result = paperWin; break;
 
-                    case "SCISSORS": resultTxt.text = scissorsWin; break;
+                    case "SCISSORS": result = scissorsWin; break;
                 }
                 --playerScore;
                 playerScoreTxt.text = $"Player score: {playerScore}";
                 break;
         }
-        ShowOrHideResultPopup();
+        resultPopup.Show(result);
         HideOrShowButton();
     }
 }
