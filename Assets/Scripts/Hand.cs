@@ -17,6 +17,7 @@ public class Hand : MonoBehaviour
     [SerializeField] private Transform enemyHand;
     [SerializeField] private GameObject groupButton;
     [SerializeField] private ResultPopup resultPopup;
+    [SerializeField] private RestartPopup restartPopup;
     [SerializeField] private TextMeshProUGUI playerScoreTxt;
     [SerializeField] private TextMeshProUGUI enemyScoreTxt;
 
@@ -77,6 +78,8 @@ public class Hand : MonoBehaviour
             .OnComplete(() =>
             {
                 state = State.Watting;
+                if (playerScore == 0) restartPopup.Show("Enemy Win!");
+                else if (enemyScore == 0) restartPopup.Show("Player Win!");
             });
     }
 
